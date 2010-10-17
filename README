@@ -1,0 +1,15 @@
+mmResearchrSearchEngine is a SearchEngine-Plugin for Papers.
+
+      Papers: http://mekentosj.com/papers/
+   Researchr: http://researchr.org/
+         API: http://researchr.org/about/api/
+
+
+
+Installation:
+
+$ git clone git://github.com/muellmat/mmResearchrSearchEngine.git
+$ cd mmResearchrSearchEngine
+$ xcodebuild -configuration 'Development + Install'
+
+Now (re)start Papers...
