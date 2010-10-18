@@ -490,10 +490,31 @@ NSArray *searchtokens;
 	
 	// test connection
 	[self setStatusString:NSLocalizedStringFromTableInBundle(
-		 @"Connecting with Researchr...", 
-		 nil, 
-		 [NSBundle bundleForClass:[self class]], 
-		 @"Status message shown when plugin is connecting to the service")];
+															 @"Connecting with Researchr...", 
+															 nil, 
+															 [NSBundle bundleForClass:[self class]], 
+															 @"Status message shown when plugin is connecting to the service")];
+	/*
+	if (system("ping -c 2 researchr.org")) {
+		NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
+		[userInfo setObject:NSLocalizedStringFromTableInBundle(
+															   @"Service Temporarily Unavailable.", 
+															   nil, 
+															   [NSBundle bundleForClass:[self class]], 
+															   @"Error message indicating that the service is currently not available") 
+					 forKey:NSLocalizedDescriptionKey];
+		[userInfo setObject:NSLocalizedStringFromTableInBundle(
+															   @"Please try again later.", 
+															   nil, 
+															   [NSBundle bundleForClass:[self class]], 
+															   @"Recovery suggestion indicating to try the previous operation again at a later time") 
+					 forKey:NSLocalizedRecoverySuggestionErrorKey];		
+		[self setSearchError:[NSError errorWithDomain:@"DBLPSearchController" 
+												 code:1 
+											 userInfo:userInfo]];
+		goto cleanup;
+	}
+	*/
 	
 	// if there is no error, everything is fine
 	[self setStatusString:NSLocalizedStringFromTableInBundle(
@@ -507,7 +528,92 @@ NSArray *searchtokens;
 		goto cleanup;
 	}
 	
+	
+	
+	
+	
+	
+	
+	
 	// ToDo
+	
+	
+	
+	
+	
+	// test   example: http://researchr.org/api/search/publication/web+service
+	
+	// Create new SBJSON parser object
+	SBJsonParser *parser = [[SBJsonParser alloc] init];
+	
+	// Prepare URL request to download statuses from Twitter
+	NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://researchr.org/api/search/publication/web+service"]];
+	
+	// Perform request and get JSON back as a NSData object
+	NSData *response = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
+	
+	// Get JSON as a NSString from NSData response
+	NSString *json_string = [[NSString alloc] initWithData:response encoding:NSUTF8StringEncoding];
+	
+	// parse the JSON response into an object
+	// Here we're using NSArray since we're parsing an array of JSON status objects
+	NSArray *results = [[parser objectWithString:json_string error:nil] objectForKey:@"result"];
+	
+	
+	[self setItemsFound:[NSNumber numberWithInteger:9999]];
+	[del didFindResults:self];	
+	[self setRetrievedItems:[NSNumber numberWithInt:9999]];
+	[self setItemsToRetrieve:[NSNumber numberWithInteger:0]];
+	
+	
+	// Each element in statuses is a single status
+	// represented as a NSDictionary
+	NSMutableArray *papers = [NSMutableArray arrayWithCapacity:9999];
+	for (NSDictionary *result in results) {
+		// You can retrieve individual values using objectForKey on the status NSDictionary
+		// This will print the tweet and username to the console
+		NSMutableDictionary *paper = [NSMutableDictionary dictionaryWithCapacity:50];
+		[paper setValue:[result objectForKey:@"key"] forKey:@"identifier"];
+		[paper setValue:[result objectForKey:@"title"] forKey:@"title"];
+		//[paper setValue:[result objectForKey:@"year"] forKey:@"year"];
+		[paper setValue:[result objectForKey:@"doi"] forKey:@"doi"];
+		[paper setValue:[result objectForKey:@"month"] forKey:@"month"];
+		
+		// check paper before adding it
+		if (paper) {
+			[papers addObject:paper];
+		}
+		
+		// check whether we have been cancelled
+		if (!shouldContinueSearch) {
+			goto cleanup;
+		}
+		
+		
+		/*
+		NSLog(@"\n%@\n%@\n%@\n%@\n\n\n", 
+			  [result objectForKey:@"year"], 
+			  [result objectForKey:@"title"], 
+			  [result objectForKey:@"key"], 
+			  [result objectForKey:@"doi"]);
+		 */
+	}
+	
+	//NSLog(@"\n%@\n\n", papers);
+	
+	// Hand them to the delegate
+	[del didRetrieveObjects:[NSDictionary dictionaryWithObject:papers forKey:@"papers"]];
+	
+	goto cleanup;
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	
