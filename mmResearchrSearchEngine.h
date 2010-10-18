@@ -17,6 +17,7 @@
 
 #import <Cocoa/Cocoa.h>
 #import "PapersSearchPluginProtocol.h"
+#import "JSON/JSON.h"
 
 @interface mmResearchrSearchEngine : NSObject   <PapersSearchPluginProtocol, 
 											PapersMatchPluginProtocol, 
