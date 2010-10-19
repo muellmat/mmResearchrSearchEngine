@@ -6,35 +6,14 @@
 	<dict>
 		<key>All Fields</key>
 		<string>[ALL]</string>
-		<key>Title</key>
-		<string>[TI]</string>
 		<key>Title+Abstract</key>
 		<string>[TIAB]</string>
-		<key>Author</key>
-		<string>[AU]</string>
-		<key>Author (Given Name)</key>
-		<string>[AUG]</string>
-		<key>Author (Family Name)</key>
-		<string>[AUF]</string>
-		<key>Year</key>
-		<string>[YR]</string>
-		<key>Researchr Key</key>
-		<string>[DK]</string>
 	</dict>
 	<key>order</key>
 	<array>
 		<string>All Fields</string>
 		<string>SPACER</string>
-		<string>Title</string>
 		<string>Title+Abstract</string>
-		<string>SPACER</string>
-		<string>Author</string>
-		<string>Author (Given Name)</string>
-		<string>Author (Family Name)</string>
-		<string>SPACER</string>
-		<string>Year</string>
-		<string>SPACER</string>
-		<string>Researchr Key</string>
 	</array>
 </dict>
 </plist>

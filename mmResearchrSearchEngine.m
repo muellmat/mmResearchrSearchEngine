@@ -12,6 +12,17 @@
 
 
 
+@implementation NSString (url)
+-(NSString *)urlEncodedString {
+	return [(NSString *)CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault, (CFStringRef)self, NULL, CFSTR(":/?#[]@!$&Õ()*+,;="), kCFStringEncodingUTF8) autorelease];
+}
+-(NSString *)urlDecodedString {
+	return [self stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+}
+@end
+
+
+
 @interface mmResearchrSearchEngine (private)
 BOOL isSearching;
 BOOL shouldContinueSearch;
@@ -45,6 +56,8 @@ NSArray *searchtokens;
 	// ToDo
 	return YES;
 }
+
+// http://www.bagonca.com/blog/2009/04/08/iphone-tip-1-url-encoding-in-objective-c/
 
 @end
 
@@ -490,31 +503,30 @@ NSArray *searchtokens;
 	
 	// test connection
 	[self setStatusString:NSLocalizedStringFromTableInBundle(
-															 @"Connecting with Researchr...", 
-															 nil, 
-															 [NSBundle bundleForClass:[self class]], 
-															 @"Status message shown when plugin is connecting to the service")];
-	/*
-	if (system("ping -c 2 researchr.org")) {
+						@"Connecting with Researchr...", 
+						nil, 
+						[NSBundle bundleForClass:[self class]], 
+						@"Status message shown when plugin is connecting to the service")];
+	
+	/* if (system("ping -c 2 researchr.org")) {
 		NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
 		[userInfo setObject:NSLocalizedStringFromTableInBundle(
-															   @"Service Temporarily Unavailable.", 
-															   nil, 
-															   [NSBundle bundleForClass:[self class]], 
-															   @"Error message indicating that the service is currently not available") 
+						@"Service Temporarily Unavailable.", 
+						nil, 
+						[NSBundle bundleForClass:[self class]], 
+						@"Error message indicating that the service is currently not available") 
 					 forKey:NSLocalizedDescriptionKey];
 		[userInfo setObject:NSLocalizedStringFromTableInBundle(
-															   @"Please try again later.", 
-															   nil, 
-															   [NSBundle bundleForClass:[self class]], 
-															   @"Recovery suggestion indicating to try the previous operation again at a later time") 
+						@"Please try again later.", 
+						nil, 
+						[NSBundle bundleForClass:[self class]], 
+						@"Recovery suggestion indicating to try the previous operation again at a later time") 
 					 forKey:NSLocalizedRecoverySuggestionErrorKey];		
 		[self setSearchError:[NSError errorWithDomain:@"DBLPSearchController" 
 												 code:1 
 											 userInfo:userInfo]];
 		goto cleanup;
-	}
-	*/
+	} */
 	
 	// if there is no error, everything is fine
 	[self setStatusString:NSLocalizedStringFromTableInBundle(
@@ -528,56 +540,94 @@ NSArray *searchtokens;
 		goto cleanup;
 	}
 	
+	// counter
+	unsigned int papers_retrieved = 0;
+	unsigned int papers_total = 0;
 	
+	// example web service: http://researchr.org/api/search/publication/web+service
+	// json tutorial: http://blog.zachwaugh.com/post/309924609/how-to-use-json-in-cocoaobjective-c
 	
+	NSMutableString *url = [NSMutableString new];
+	[url appendString:@"http://researchr.org/api/search/publication/"];
+	NSMutableString *query = [NSMutableString new];
+	for (NSDictionary *token in tokens) {
+		[query appendString:@"\""];
+		[query appendString:[token valueForKey:@"token"]];
+		[query appendString:@"\" "];
+	}
+	[url appendString:[[NSString stringWithFormat:@"%@",query] urlEncodedString]];
 	
-	
-	
-	
-	
-	// ToDo
-	
-	
-	
-	
-	
-	// test   example: http://researchr.org/api/search/publication/web+service
-	
-	// Create new SBJSON parser object
 	SBJsonParser *parser = [[SBJsonParser alloc] init];
-	
-	// Prepare URL request to download statuses from Twitter
-	NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://researchr.org/api/search/publication/web+service"]];
-	
-	// Perform request and get JSON back as a NSData object
+	NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
 	NSData *response = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
-	
-	// Get JSON as a NSString from NSData response
 	NSString *json_string = [[NSString alloc] initWithData:response encoding:NSUTF8StringEncoding];
-	
-	// parse the JSON response into an object
-	// Here we're using NSArray since we're parsing an array of JSON status objects
 	NSArray *results = [[parser objectWithString:json_string error:nil] objectForKey:@"result"];
 	
+	papers_total = [results count];
 	
-	[self setItemsFound:[NSNumber numberWithInteger:9999]];
-	[del didFindResults:self];	
-	[self setRetrievedItems:[NSNumber numberWithInt:9999]];
-	[self setItemsToRetrieve:[NSNumber numberWithInteger:0]];
+	// Check whether we got anything at all
+	if (papers_total == 0) {
+		[self setStatusString:NSLocalizedStringFromTableInBundle(
+							@"No Papers found.", 
+							nil, 
+							[NSBundle bundleForClass:[self class]], 
+							@"Status message shown when no results were found for the query")];
+		goto cleanup;	
+	}
 	
+	// Store the number of total articles matching the query
+	if (papers_total > 0) {
+		[self setItemsFound:[NSNumber numberWithInteger:papers_total]];
+		[del didFindResults:self];
+	}
 	
-	// Each element in statuses is a single status
-	// represented as a NSDictionary
-	NSMutableArray *papers = [NSMutableArray arrayWithCapacity:9999];
+	NSMutableArray *papers = [NSMutableArray arrayWithCapacity:papers_total];
 	for (NSDictionary *result in results) {
-		// You can retrieve individual values using objectForKey on the status NSDictionary
-		// This will print the tweet and username to the console
-		NSMutableDictionary *paper = [NSMutableDictionary dictionaryWithCapacity:50];
+		NSMutableDictionary *paper = [NSMutableDictionary dictionaryWithCapacity:10];
+		
 		[paper setValue:[result objectForKey:@"key"] forKey:@"identifier"];
-		[paper setValue:[result objectForKey:@"title"] forKey:@"title"];
-		//[paper setValue:[result objectForKey:@"year"] forKey:@"year"];
 		[paper setValue:[result objectForKey:@"doi"] forKey:@"doi"];
+		[paper setValue:[result objectForKey:@"title"] forKey:@"title"];
+		[paper setValue:[result objectForKey:@"abstract"] forKey:@"abstract"];
+		[paper setValue:[result objectForKey:@"note"] forKey:@"notes"];
 		[paper setValue:[result objectForKey:@"month"] forKey:@"month"];
+		[paper setValue:[[NSNumber alloc] initWithInteger:[[result objectForKey:@"year"] integerValue]] forKey:@"year"];
+		
+		NSMutableArray *authors = [NSMutableArray arrayWithCapacity:[[result objectForKey:@"authors"] count]];
+		for (NSDictionary *alias in [result objectForKey:@"authors"]) {
+			NSMutableDictionary *author = [NSMutableDictionary dictionaryWithCapacity:10];
+			
+			// split author's fullname into parts
+			NSCharacterSet *whitespace = [NSCharacterSet whitespaceCharacterSet];
+			NSArray *parts = [[alias objectForKey:@"alias"] componentsSeparatedByCharactersInSet:whitespace];
+			NSString *lastName = [alias objectForKey:@"alias"];
+			NSMutableString *firstNames = [[NSMutableString alloc] initWithString:@""];
+			NSMutableString *initials = [[NSMutableString alloc] initWithString:@""];
+			int n = [parts count];
+			if (n >= 2) {
+				int last = n - 1;
+				firstNames = [NSMutableString stringWithString:@""];
+				initials = [NSMutableString stringWithString:@""];
+				int i = 0;
+				for (i=0; i<last; i++) {
+					[firstNames appendString:[parts objectAtIndex:i]];
+					[initials appendString:[[parts objectAtIndex:i] substringToIndex:1]];
+				}
+				lastName = [parts objectAtIndex:last];
+			}
+								  
+			[paper setValue:firstNames forKey:@"firstName"];
+			[paper setValue:initials forKey:@"initials"];
+			[author setValue:lastName forKey:@"lastName"];
+			
+			if (author) {
+				[authors addObject:author];
+			}
+		}
+		
+		if ([authors count] > 0) {
+			[paper setValue:authors forKey:@"authors"];
+		}
 		
 		// check paper before adding it
 		if (paper) {
@@ -588,34 +638,10 @@ NSArray *searchtokens;
 		if (!shouldContinueSearch) {
 			goto cleanup;
 		}
-		
-		
-		/*
-		NSLog(@"\n%@\n%@\n%@\n%@\n\n\n", 
-			  [result objectForKey:@"year"], 
-			  [result objectForKey:@"title"], 
-			  [result objectForKey:@"key"], 
-			  [result objectForKey:@"doi"]);
-		 */
 	}
-	
-	//NSLog(@"\n%@\n\n", papers);
 	
 	// Hand them to the delegate
 	[del didRetrieveObjects:[NSDictionary dictionaryWithObject:papers forKey:@"papers"]];
-	
-	goto cleanup;
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 cleanup:
 	
