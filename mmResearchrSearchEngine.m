@@ -317,13 +317,13 @@ NSArray *searchtokens;
 
 // Return the weburl to the homepage of the searchengine/repository.
 -(NSURL*)info_url {
-	return [NSURL URLWithString:@"http://researchr.uni-trier.de/"];
+	return [NSURL URLWithString:@"http://researchr.org/"];
 }
 
 // Return a unique identifier in the form of a reverse web address of the 
 // search engine.
 -(NSString*)identifier {
-	return @"de.uni-trier.researchr";
+	return @"org.researchr";
 }
 
 // Return whether the search engine requires a subscription.
@@ -522,7 +522,7 @@ NSArray *searchtokens;
 						[NSBundle bundleForClass:[self class]], 
 						@"Recovery suggestion indicating to try the previous operation again at a later time") 
 					 forKey:NSLocalizedRecoverySuggestionErrorKey];		
-		[self setSearchError:[NSError errorWithDomain:@"DBLPSearchController" 
+		[self setSearchError:[NSError errorWithDomain:@"ResearchrSearchController" 
 												 code:1 
 											 userInfo:userInfo]];
 		goto cleanup;
@@ -586,7 +586,7 @@ NSArray *searchtokens;
 		NSMutableDictionary *paper = [NSMutableDictionary dictionaryWithCapacity:10];
 		
 		[paper setValue:[result objectForKey:@"key"] forKey:@"identifier"];
-		[paper setValue:[result objectForKey:@"doi"] forKey:@"doi"];
+		[paper setValue:[[result objectForKey:@"doi"] stringByReplacingOccurrencesOfRegex:@"http://[\\w+\\d+\\.]+/" withString:@""] forKey:@"doi"];
 		[paper setValue:[result objectForKey:@"title"] forKey:@"title"];
 		[paper setValue:[result objectForKey:@"abstract"] forKey:@"abstract"];
 		[paper setValue:[result objectForKey:@"note"] forKey:@"notes"];

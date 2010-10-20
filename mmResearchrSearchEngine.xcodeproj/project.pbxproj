@@ -25,6 +25,9 @@
 		396FD39D126B5EBB00BE6206 /* logo_researchr.tif in Resources */ = {isa = PBXBuildFile; fileRef = 396FD396126B5EBB00BE6206 /* logo_researchr.tif */; };
 		396FD39E126B5EBB00BE6206 /* statusbar_researchr.tif in Resources */ = {isa = PBXBuildFile; fileRef = 396FD397126B5EBB00BE6206 /* statusbar_researchr.tif */; };
 		396FD39F126B5EBB00BE6206 /* toolstrip_researchr.tif in Resources */ = {isa = PBXBuildFile; fileRef = 396FD398126B5EBB00BE6206 /* toolstrip_researchr.tif */; };
+		3993670F126F571600CB4A77 /* RegexKitLite.h in Headers */ = {isa = PBXBuildFile; fileRef = 3993670D126F571600CB4A77 /* RegexKitLite.h */; };
+		39936710126F571600CB4A77 /* RegexKitLite.m in Sources */ = {isa = PBXBuildFile; fileRef = 3993670E126F571600CB4A77 /* RegexKitLite.m */; };
+		3993672B126F59AD00CB4A77 /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3993672A126F59AD00CB4A77 /* libicucore.dylib */; };
 		3993A07311B98AF400DB4D96 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3993A07211B98AF400DB4D96 /* libsqlite3.dylib */; };
 		399ACDA611A54C4D00D7A73F /* Panel.xib in Resources */ = {isa = PBXBuildFile; fileRef = 399ACDA411A54C4D00D7A73F /* Panel.xib */; };
 		399ACE0911A5540300D7A73F /* searchengine.icns in Resources */ = {isa = PBXBuildFile; fileRef = 399ACE0111A5540300D7A73F /* searchengine.icns */; };
@@ -75,6 +78,9 @@
 		396FD396126B5EBB00BE6206 /* logo_researchr.tif */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = logo_researchr.tif; sourceTree = "<group>"; };
 		396FD397126B5EBB00BE6206 /* statusbar_researchr.tif */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = statusbar_researchr.tif; sourceTree = "<group>"; };
 		396FD398126B5EBB00BE6206 /* toolstrip_researchr.tif */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = toolstrip_researchr.tif; sourceTree = "<group>"; };
+		3993670D126F571600CB4A77 /* RegexKitLite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegexKitLite.h; sourceTree = "<group>"; };
+		3993670E126F571600CB4A77 /* RegexKitLite.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegexKitLite.m; sourceTree = "<group>"; };
+		3993672A126F59AD00CB4A77 /* libicucore.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicucore.dylib; path = usr/lib/libicucore.dylib; sourceTree = SDKROOT; };
 		3993A07211B98AF400DB4D96 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		399ACDA511A54C4D00D7A73F /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/Panel.xib; sourceTree = "<group>"; };
 		399ACE0111A5540300D7A73F /* searchengine.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = searchengine.icns; sourceTree = "<group>"; };
@@ -105,6 +111,7 @@
 				A61AB3440B658CDC0027D08B /* Cocoa.framework in Frameworks */,
 				3993A07311B98AF400DB4D96 /* libsqlite3.dylib in Frameworks */,
 				393C6C5911CA436800608499 /* SystemConfiguration.framework in Frameworks */,
+				3993672B126F59AD00CB4A77 /* libicucore.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -171,6 +178,7 @@
 				089C1672FE841209C02AAC07 /* Foundation.framework */,
 				089C167FFE841241C02AAC07 /* AppKit.framework */,
 				3993A07211B98AF400DB4D96 /* libsqlite3.dylib */,
+				3993672A126F59AD00CB4A77 /* libicucore.dylib */,
 			);
 			name = "Other Frameworks";
 			sourceTree = "<group>";
@@ -186,6 +194,8 @@
 		32C88E010371C26100C91783 /* Other Sources */ = {
 			isa = PBXGroup;
 			children = (
+				3993670D126F571600CB4A77 /* RegexKitLite.h */,
+				3993670E126F571600CB4A77 /* RegexKitLite.m */,
 				39B3746E126C436200E721B0 /* JSON.h */,
 				39B37470126C449E00E721B0 /* NSObject+SBJSON.h */,
 				39B37471126C449E00E721B0 /* NSObject+SBJSON.m */,
@@ -247,6 +257,7 @@
 				39B3747E126C44A700E721B0 /* SBJsonBase.h in Headers */,
 				39B37480126C44A700E721B0 /* SBJsonParser.h in Headers */,
 				39B37482126C44A700E721B0 /* SBJsonWriter.h in Headers */,
+				3993670F126F571600CB4A77 /* RegexKitLite.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -340,6 +351,7 @@
 				39B3747F126C44A700E721B0 /* SBJsonBase.m in Sources */,
 				39B37481126C44A700E721B0 /* SBJsonParser.m in Sources */,
 				39B37483126C44A700E721B0 /* SBJsonWriter.m in Sources */,
+				39936710126F571600CB4A77 /* RegexKitLite.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

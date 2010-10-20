@@ -18,6 +18,7 @@
 #import <Cocoa/Cocoa.h>
 #import "PapersSearchPluginProtocol.h"
 #import "JSON.h"
+#import "RegexKitLite.h"
 
 @interface mmResearchrSearchEngine : NSObject   <PapersSearchPluginProtocol, 
 											PapersMatchPluginProtocol, 
