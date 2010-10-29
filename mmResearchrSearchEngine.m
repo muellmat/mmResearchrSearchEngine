@@ -585,8 +585,22 @@ NSArray *searchtokens;
 	for (NSDictionary *result in results) {
 		NSMutableDictionary *paper = [NSMutableDictionary dictionaryWithCapacity:10];
 		
+		// the DOI part is a bit messy...
+		if ([[result objectForKey:@"doi"] stringByMatching:@"10\\."]) {
+			// String contains DOI --> clean it and add it to Papers
+			[paper setValue:[[result objectForKey:@"doi"] stringByReplacingOccurrencesOfRegex:@"http://[\\w+\\d+\\.]+/" withString:@""] forKey:@"doi"];
+		} else if ([[result objectForKey:@"doi"] stringByMatching:@"(pdf|PDF|ps|PS)$"]) {
+			// Perfect! String is a URL to a PDF file
+			[paper setValue:[result objectForKey:@"doi"] forKey:@"path"];
+		} else if ([[result objectForKey:@"doi"] stringByMatching:@"^db/"]) {
+			// Part of DBLP --> complete the URL
+			[paper setValue:[NSString stringWithFormat:@"http://www.informatik.uni-trier.de/~ley/%@",[result objectForKey:@"doi"]] forKey:@"url"];
+		} else {
+			// Just a URL
+			[paper setValue:[result objectForKey:@"doi"] forKey:@"url"];
+		}
+		
 		[paper setValue:[result objectForKey:@"key"] forKey:@"identifier"];
-		[paper setValue:[[result objectForKey:@"doi"] stringByReplacingOccurrencesOfRegex:@"http://[\\w+\\d+\\.]+/" withString:@""] forKey:@"doi"];
 		[paper setValue:[result objectForKey:@"title"] forKey:@"title"];
 		[paper setValue:[result objectForKey:@"abstract"] forKey:@"abstract"];
 		[paper setValue:[result objectForKey:@"note"] forKey:@"notes"];
