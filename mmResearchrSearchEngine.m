@@ -12,6 +12,8 @@
 
 
 
+// http://www.bagonca.com/blog/2009/04/08/iphone-tip-1-url-encoding-in-objective-c/
+
 @implementation NSString (url)
 -(NSString *)urlEncodedString {
 	return [(NSString *)CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault, (CFStringRef)self, NULL, CFSTR(":/?#[]@!$&Õ()*+,;="), kCFStringEncodingUTF8) autorelease];
@@ -56,8 +58,6 @@ NSArray *searchtokens;
 	// ToDo
 	return YES;
 }
-
-// http://www.bagonca.com/blog/2009/04/08/iphone-tip-1-url-encoding-in-objective-c/
 
 @end
 
