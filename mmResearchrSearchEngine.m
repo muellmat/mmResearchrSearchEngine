@@ -507,8 +507,15 @@ NSArray *searchtokens;
 						nil, 
 						[NSBundle bundleForClass:[self class]], 
 						@"Status message shown when plugin is connecting to the service")];
-	
-	/* if (system("ping -c 2 researchr.org")) {
+	NSTask *task = [[NSTask alloc] init];
+	NSPipe *pipe = [NSPipe pipe];
+	NSFileHandle *file = [pipe fileHandleForReading];
+	[task setLaunchPath:@"/usr/local/bin/nmap"];
+	[task setArguments:[NSArray arrayWithObjects: @"-p", @"80", @"researchr.org", nil]];
+	[task setStandardOutput:pipe];
+	[task launch];
+	NSString *connectionResponse = [[NSString alloc] initWithData:[file readDataToEndOfFile] encoding:NSUTF8StringEncoding];
+	if ([connectionResponse rangeOfString:@"open"].location == NSNotFound) {
 		NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
 		[userInfo setObject:NSLocalizedStringFromTableInBundle(
 						@"Service Temporarily Unavailable.", 
@@ -526,8 +533,7 @@ NSArray *searchtokens;
 												 code:1 
 											 userInfo:userInfo]];
 		goto cleanup;
-	} */
-	
+	}
 	// if there is no error, everything is fine
 	[self setStatusString:NSLocalizedStringFromTableInBundle(
 		 @"Connected to Researchr...", 
